@@ -7,28 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets
     LinguistTools WebEngineWidgets TextToSpeech)
-qt_standard_project_setup()
 
-qt_add_lupdate(
-    TS_FILES
-    translations/Movar_cpp_en_US.ts
-    translations/Movar_cpp_ja_JP.ts
-    translations/Movar_cpp_uk_UA.ts
-
-    SOURCES
-    mainwindow.cpp
-    dictionarysettings.cpp
-    fileloader.cpp
-    mainwindow.ui
-    dictionarysettings.ui
-)
-
-qt_add_lrelease(
-    TS_FILES
-    translations/Movar_cpp_en_US.ts
-    translations/Movar_cpp_ja_JP.ts
-    translations/Movar_cpp_uk_UA.ts
-)
+qt_standard_project_setup(I18N_TRANSLATED_LANGUAGES en uk ja)
 
 qt_add_executable(Movar_cpp
     mainwindow.ui
@@ -46,7 +26,11 @@ qt_add_executable(Movar_cpp
     adaptedstringlistmodel.cpp
 )
 
-add_dependencies(${CMAKE_PROJECT_NAME} update_translations)
+qt_add_translations(${PROJECT_NAME}
+    TS_FILES translations/Movar_cpp_en_US.ts
+             translations/Movar_cpp_uk_UA.ts
+             translations/Movar_cpp_ja_JP.ts
+)
 
 target_link_libraries(Movar_cpp PRIVATE
     Qt6::Widgets
