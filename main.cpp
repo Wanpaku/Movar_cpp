@@ -26,18 +26,7 @@ along with Movar. If not, see <https://www.gnu.org/licenses/>.*/
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    /*QDirIterator it("/../", QDirIterator::Subdirectories);
-    while (it.hasNext()) {
-        QString dir = it.next();
-        qDebug() << dir;
-        // /etc/.
-        // /etc/..
-        // /etc/X11
-        // /etc/X11/fs
-        // ...
-    }*/
-    //qDebug() << QFile::exists("icons/movar.png");
-    QApplication::setWindowIcon(QIcon("icons/movar.png"));
+    QApplication::setWindowIcon(QIcon("./icons/movar.ico"));
     QPointer<FileLoader> fileloader = new FileLoader();
     MainWindow mainwindow(fileloader);
     mainwindow.show();
