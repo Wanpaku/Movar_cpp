@@ -35,10 +35,9 @@ FileLoader::FileLoader(QObject *parent)
 
 }
 
-QPointer<QSettings> FileLoader::get_settings()
+auto FileLoader::get_settings() -> QPointer<QSettings>
 {
-    if (!settings)
-    {
+    if (settings == nullptr) {
         settings = new QSettings("Movar");
     }
     settings->setFallbacksEnabled(false);
@@ -46,22 +45,22 @@ QPointer<QSettings> FileLoader::get_settings()
     return settings;
 }
 
-hash_of_dicts FileLoader::get_hash_of_dicts()
+auto FileLoader::get_hash_of_dicts() -> hash_of_dicts
 {
     return dicts;
 }
 
-hash_of_indexes FileLoader::get_hash_of_indexes()
+auto FileLoader::get_hash_of_indexes() -> hash_of_indexes
 {
     return dict_indexes;
 }
 
-hash_of_paths FileLoader::get_hash_of_paths()
+auto FileLoader::get_hash_of_paths() -> hash_of_paths
 {
     return paths_and_dict_names;
 }
 
-hash_of_mapped_words FileLoader::get_hash_of_mapped_words()
+auto FileLoader::get_hash_of_mapped_words() -> hash_of_mapped_words
 {
     return words;
 }
@@ -108,9 +107,10 @@ void FileLoader::download_paths_to_dicts()
         paths_to_dicts.clear();
     }
     const QString& default_paths_to_dicts {""};
-    QString current_paths = settings->value(
-        "dictsettings/paths_to_dicts",
-        default_paths_to_dicts).toString();
+    const QString current_paths
+        = settings
+              ->value("dictsettings/paths_to_dicts", default_paths_to_dicts)
+              .toString();
     if (current_paths != default_paths_to_dicts)
     {
         paths_to_dicts = current_paths.split('\n', Qt::SkipEmptyParts);
@@ -119,7 +119,7 @@ void FileLoader::download_paths_to_dicts()
 
 void FileLoader::read_from_txt_file(const QString& path)
 {
-    QDir path_to_dict(path);
+    const QDir path_to_dict(path);
     const QStringList& selected_formats = QStringList({"*.mvr"});
     const QStringList& files =
         path_to_dict.entryList(selected_formats, QDir::Files);
@@ -142,12 +142,12 @@ void FileLoader::read_from_txt_file(const QString& path)
         QTextStream input_stream(&input_file);
         for (int i=0; i<4; ++i)
         {
-            QString title = input_stream.readLine();
+            const QString title = input_stream.readLine();
             dict_requisites.append(title);
         }
         while (!input_stream.atEnd())
         {
-            QString line = input_stream.readLine();
+            const QString line = input_stream.readLine();
             full_dict += line + "\n";
         }
         const QString& full_dict_name =
@@ -155,11 +155,11 @@ void FileLoader::read_from_txt_file(const QString& path)
         paths_and_dict_names.insert(
             path, std::make_shared<QString>(full_dict_name));
 
-        tuple_of_shared_pointers dict_tuple = std::make_tuple(
-            std::make_shared<QString>(dict_requisites[1]),
-            std::make_shared<QString>(dict_requisites[2]),
-            std::make_shared<QString>(dict_requisites[3]),
-            std::make_shared<QString>(full_dict));
+        const tuple_of_shared_pointers dict_tuple
+            = std::make_tuple(std::make_shared<QString>(dict_requisites[1]),
+                              std::make_shared<QString>(dict_requisites[2]),
+                              std::make_shared<QString>(dict_requisites[3]),
+                              std::make_shared<QString>(full_dict));
         dicts.insert(full_dict_name, dict_tuple);
     }
 }
@@ -184,10 +184,11 @@ void FileLoader::create_dict_indexes()
 
             while(match_iter.hasNext())
             {
-                QRegularExpressionMatch match = match_iter.next();
+                const QRegularExpressionMatch match = match_iter.next();
                 const QString& word = match.captured(0);
-                const int& word_start = match.capturedStart(0);
-                const int& word_end = match.capturedEnd(0);
+                const int& word_start
+                    = static_cast<int>(match.capturedStart(0));
+                const int& word_end = static_cast<int>(match.capturedEnd(0));
 
                 dict_indexes[dict_name].append(std::make_tuple(
                     std::make_shared<QString>(word),
@@ -224,7 +225,7 @@ void FileLoader::download_dictionaries()
         words.clear();
     }
 
-    const int& path_to_dicts_count = paths_to_dicts.size();
+    const int& path_to_dicts_count = static_cast<int>(paths_to_dicts.size());
 
     if (path_to_dicts_count > 0)
     {
@@ -238,10 +239,10 @@ void FileLoader::download_dictionaries()
     int path_count {0};
     for (const auto& path: std::as_const(paths_to_dicts))
     {
-        if (progress_dialog)
-        {
+        if (progress_dialog != nullptr) {
             progress_dialog->setValue(path_count);
-            const int& pos = path.length() - path.lastIndexOf("/") - 1;
+            const int& pos
+                = static_cast<int>(path.length() - path.lastIndexOf("/") - 1);
             progress_dialog->setLabelText(path.right(pos));
         }
 
@@ -262,31 +263,26 @@ void FileLoader::download_dictionaries()
 
     create_dict_indexes();
 
-    if (progress_dialog)
-    {
+    if (progress_dialog != nullptr) {
         progress_dialog->close();
     }
 }
 
-QString FileLoader::simplified_word(const QString& word)
+auto FileLoader::simplified_word(const QString& word) -> QString
 {
     //Метод, що прибирає діакритичні знаки й апостроф
     //задля правильного сортування слів згідно абетки
     const auto& diacritic_letters =
         QString("ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØ"
                 "ÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ");
-    QStringList not_diacritic_letters{"S", "OE", "Z", "s", "oe",
-                                      "z", "Y", "Y", "u", "A",
-                                      "A", "A", "A", "A", "A",
-                                      "AE", "C", "E", "E", "E",
-                                      "E", "I", "I", "I", "I", "D",
-                                      "N", "O", "O", "O", "O", "O",
-                                      "O", "U", "U", "U", "U", "Y",
-                                      "s", "a", "a", "a", "a", "a",
-                                      "a", "ae", "c", "e", "e", "e",
-                                      "e", "i", "i", "i", "i", "o", "n", "o",
-                                      "o", "o", "o", "o", "o", "u", "u", "u",
-                                      "u", "y", "y"};
+    const QStringList not_diacritic_letters {
+        "S", "OE", "Z", "s",  "oe", "z", "Y", "Y", "u", "A",  "A", "A",
+        "A", "A",  "A", "AE", "C",  "E", "E", "E", "E", "I",  "I", "I",
+        "I", "D",  "N", "O",  "O",  "O", "O", "O", "O", "U",  "U", "U",
+        "U", "Y",  "s", "a",  "a",  "a", "a", "a", "a", "ae", "c", "e",
+        "e", "e",  "e", "i",  "i",  "i", "i", "o", "n", "o",  "o", "o",
+        "o", "o",  "o", "u",  "u",  "u", "u", "y", "y"
+    };
 
     const auto& word_lower = word.toLower();
     QString cleared_string;

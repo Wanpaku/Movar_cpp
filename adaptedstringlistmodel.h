@@ -29,15 +29,16 @@ class AdaptedStringListModel : public QStringListModel
     //у якому відображається перелік наявних слів для вибору при пошуку
     Q_OBJECT
 public:
-    AdaptedStringListModel(QObject *parent);
-    QVariant data (const QModelIndex& index, int role) const override;
+    explicit AdaptedStringListModel(QObject* parent);
+    [[nodiscard]] QVariant data(const QModelIndex& index,
+                                int role) const override;
     void set_adapted_role (int role);
-    int adapted_role () const;
+    [[nodiscard]] int adapted_role() const;
     static QString cleared_word(const QString &value);
 
 
 private:
-    int current_adapted_role = 0;
+    int current_adapted_role { 0 };
 };
 
 #endif // ADAPTEDSTRINGLISTMODEL_H

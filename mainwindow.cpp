@@ -17,22 +17,18 @@ along with Movar. If not, see <https://www.gnu.org/licenses/>.*/
 
 #include "mainwindow.h"
 
-MainWindow::MainWindow(FileLoader* new_fileloader, QWidget *parent)
+MainWindow::MainWindow(std::shared_ptr<FileLoader> new_fileloader,
+                       QPointer<QWidget> parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    , ui(std::make_shared<Ui::MainWindow>())
+    , fileloader(std::move(new_fileloader))
 {
-    fileloader = new_fileloader;
     settings = fileloader->get_settings();
     ui->setupUi(this);
     create_language_action_group();
     create_themes_action_group();
     load_settings();
     ui->search_word_line_edit->setFocus();
-}
-
-MainWindow::~MainWindow()
-{
-    delete ui;
 }
 
 void MainWindow::create_language_action_group()
@@ -61,19 +57,18 @@ void MainWindow::create_language_action_group()
 
     const QString& language_path = QApplication::applicationDirPath();
 
-    QDir dir(language_path);
+    const QDir dir(language_path);
     QStringList filenames = dir.entryList(QStringList("Movar_cpp_*.qm"));
-    for (int i=0; i<filenames.size(); ++i)
-    {
+    for (const auto& filename : std::as_const(filenames)) {
         QString locale;
-        locale = filenames[i];
+        locale = filename;
         locale.truncate(locale.lastIndexOf('.'));
         locale.remove(0, locale.indexOf("p")+3);
 
-        QString language =
-            QLocale::languageToString(QLocale(locale).language());
+        const QString language
+            = QLocale::languageToString(QLocale(locale).language());
 
-        QPointer<QAction> action = new QAction(language, ui->menubar);
+        const QPointer<QAction> action = new QAction(language, ui->menubar);
         action->setCheckable(true);
         action->setData(locale);
         ui->menuInterface_language->addAction(action);
@@ -88,8 +83,7 @@ void MainWindow::create_language_action_group()
 void MainWindow::at_language_changed(QAction* action)
 {
     //Слот реагування на зміну мови інтерфейсу
-    if (action != 0)
-    {
+    if (action != nullptr) {
         load_interface_language(action->data().toString());
         ui->dict_choice_combobox->clear();
         load_dict_groups_choices();
@@ -100,14 +94,14 @@ void MainWindow::at_language_changed(QAction* action)
 void MainWindow::load_interface_language(const QString& interface_language)
 {
     //Завантаження нової мови інтерфейсу
-    QString default_language {""};
+    const QString default_language { "" };
     QString current_language =
         settings->value("interface_language", default_language).toString();
 
     if (current_language != interface_language)
     {
         current_language = interface_language;
-        QLocale locale = QLocale(current_language);
+        const QLocale locale = QLocale(current_language);
         QLocale::setDefault(locale);
         switch_translator(start_translator,
                           QString("Movar_cpp_%1.qm").arg(interface_language));
@@ -122,7 +116,7 @@ void MainWindow::switch_translator(
     //Видалення старого QTranslator і завантаження нового
     qApp->removeTranslator(&translator);
 
-    QString path = QApplication::applicationDirPath() + '/';
+    const QString path = QApplication::applicationDirPath() + '/';
 
     if (start_translator.load(path + filename))
     {
@@ -133,9 +127,8 @@ void MainWindow::switch_translator(
 void MainWindow::changeEvent(QEvent* event)
 {
     //Оновлення інтерфейсу для показу виставленої нової мови інтерфейсу
-    if(event->type() == QEvent::LanguageChange)
-    {        
-        ui->retranslateUi(this);        
+    if (event->type() == QEvent::LanguageChange) {
+        ui->retranslateUi(this);
     }
 
     QMainWindow::changeEvent(event);
@@ -143,7 +136,8 @@ void MainWindow::changeEvent(QEvent* event)
 
 void MainWindow::create_themes_action_group()
 {
-    QPointer<QActionGroup> themes = new QActionGroup(ui->menuTheme_settings);
+    const QPointer<QActionGroup> themes
+        = new QActionGroup(ui->menuTheme_settings);
     themes->addAction(ui->actionDefault_theme);
     themes->addAction(ui->actionKashmir);
     themes->addAction(ui->actionPlum);
@@ -167,12 +161,12 @@ void MainWindow::create_set_of_words()
     //Створення набору слів, наявних у поточних словниках
     set_of_words.clear();
     active_dict_names.clear();
-    const QString& current_dict_group =
-        ui->dict_choice_combobox->currentText();
+    const QString& current_dict_group
+        = ui->dict_choice_combobox->currentText();
     const QString& default_dict_group =
         ui->dict_choice_combobox->itemText(0);
-    hash_of_mapped_words hash_of_mapped_words =
-        fileloader->get_hash_of_mapped_words();
+    const hash_of_mapped_words hash_of_mapped_words
+        = fileloader->get_hash_of_mapped_words();
     QMultiMap<QString, std::shared_ptr<QString>> sort_map {};
 
     if (current_dict_group != default_dict_group)
@@ -188,7 +182,8 @@ void MainWindow::create_set_of_words()
                 const QString& group_name = item.section(":", 0, 0);
                 if (group_name == current_dict_group)
                 {
-                    const int& colon_index = item.indexOf(':');
+                    const int& colon_index
+                        = static_cast<int>(item.indexOf(':'));
                     item.remove(0, colon_index+1);
                     QStringList dicts_list =
                         item.split(',', Qt::SkipEmptyParts);
@@ -200,14 +195,12 @@ void MainWindow::create_set_of_words()
                             active_dict_names.append(dict_name);
                             const auto& word_keys =
                                 hash_of_mapped_words.value(dict_name).keys();
-                            for (auto& key: std::as_const(word_keys))
-                            {
-                                QList<std::shared_ptr<QString>> values =
-                                    hash_of_mapped_words.
-                                        value(dict_name).values(key);
-                                for (auto& value: values)
-                                {
-                                    sort_map.insert(key, value);
+                            for (const auto& key : std::as_const(word_keys)) {
+                                const QList<std::shared_ptr<QString>> values
+                                    = hash_of_mapped_words.value(dict_name)
+                                          .values(key);
+                                for (const auto& value : values) {
+                                    sort_map.insert(key,value);
                                 }
                             }
                         }
@@ -226,10 +219,9 @@ void MainWindow::create_set_of_words()
             const auto& word_keys = hash_of_mapped_words.value(key).keys();
             for (const auto& word_key: std::as_const(word_keys))
             {
-                QList<std::shared_ptr<QString>> values =
-                    hash_of_mapped_words.value(key).values(word_key);
-                for (auto& value: values)
-                {
+                const QList<std::shared_ptr<QString>> values
+                    = hash_of_mapped_words.value(key).values(word_key);
+                for (const auto& value : values) {
                     sort_map.insert(word_key, value);
                 }
             }
@@ -246,21 +238,22 @@ void MainWindow::create_set_of_words()
 void MainWindow::add_completer_to_line_edit(const QString &letters)
 {
     //Додавання динамічного вибору варіантів слів до поля пошуку слів
-    QPointer<QListView> list_view = new QListView();
-    AdaptedCompleter* completer =
-        new AdaptedCompleter(set_of_words, list_view, ui->toolbar_hor_layout);
+    const QPointer<QListView> list_view = new QListView();
+    const QPointer<AdaptedCompleter> completer = new AdaptedCompleter(
+        set_of_words, list_view, ui->toolbar_hor_layout);
     ui->search_word_line_edit->setCompleter(completer);
 }
 
 void MainWindow::on_actionDicitonary_settings_triggered()
 {
     //Відкриття вікна налаштувань словників
-    dict_settings = new DictionarySettings(fileloader);
-    connect(dict_settings, &DictionarySettings::dict_groups_amount_changed,
-            this, &MainWindow::at_dict_groups_amount_changed);
-    connect(dict_settings, &DictionarySettings::available_dicts_changed,
+    dict_settings = std::make_shared<DictionarySettings>(fileloader);
+    connect(dict_settings.get(),
+            &DictionarySettings::dict_groups_amount_changed, this,
+            &MainWindow::at_dict_groups_amount_changed);
+    connect(dict_settings.get(), &DictionarySettings::available_dicts_changed,
             this, &MainWindow::create_set_of_words);
-    connect(dict_settings, &DictionarySettings::tts_settings_changed,
+    connect(dict_settings.get(), &DictionarySettings::tts_settings_changed,
             this, &MainWindow::load_tts_player);
     dict_settings->show();
 }
@@ -338,8 +331,7 @@ void MainWindow::load_search_history()
 
     if (!history_list.empty())
     {
-        for(const auto& word: history_list)
-        {
+        for (const auto& word : std::as_const(history_list)) {
             if (!word.isEmpty())
             {
                 ui->search_history_list_widget->addItem(word);
@@ -352,7 +344,6 @@ void MainWindow::load_search_history()
 void MainWindow::load_default_webengine_settings()
 {
     //Завантаження стандартних налаштувань вебвіджета
-    //default_webengine_settings = QWebEngineSettings::defaultSettings();
     default_webengine_settings = ui->result_webwindow->settings();
     def_font_family =
         default_webengine_settings->
@@ -379,18 +370,15 @@ void MainWindow::load_tts_player()
     const QString& current_tts_engine =
         settings->value("dictsettings/tts_engine",
                         default_tts_engine).toString();
-    if (tts_player)
-    {
-        delete tts_player;
-    }
+
+    tts_player.clear();
 
     if (current_tts_engine != default_tts_engine)
     {
         tts_player = new QTextToSpeech(current_tts_engine);
     }
 
-    if (tts_player)
-    {
+    if (tts_player != nullptr) {
         auto available_languages = tts_player->availableLocales();
         const QString& default_tts_language {""};
         const QString& current_tts_language =
@@ -404,9 +392,9 @@ void MainWindow::load_tts_player()
         }
 
         const QString& default_tts_voice {""};
-        QString current_tts_voice =
-            settings->value("dictsettings/tts_voice",
-                            default_tts_voice).toString();
+        const QString current_tts_voice
+            = settings->value("dictsettings/tts_voice", default_tts_voice)
+                  .toString();
 
         const QString& current_tts_voice_name =
             current_tts_voice.left(current_tts_voice.indexOf(":"));
@@ -421,23 +409,26 @@ void MainWindow::load_tts_player()
             }
         }
 
-        const int& default_tts_voice_volume = tts_player->volume() * 100;
+        const double& default_tts_voice_volume
+            = tts_player->volume() * max_voice_volume;
         const int& current_tts_voice_volume =
             settings->value("dictsettings/tts_voice_volume",
                             default_tts_voice_volume).toInt();
-        tts_player->setVolume(current_tts_voice_volume/100.);
+        tts_player->setVolume(current_tts_voice_volume / max_voice_volume);
 
-        const double& default_tts_voice_rate = tts_player->rate() * 100;
+        const double& default_tts_voice_rate
+            = tts_player->rate() * max_voice_rate;
         const int& current_tts_voice_rate =
             settings->value("dictsettings/tts_voice_rate",
                             default_tts_voice_rate).toInt();
-        tts_player->setRate(current_tts_voice_rate/100.);
+        tts_player->setRate(current_tts_voice_rate / max_voice_rate);
 
-        const double& default_tts_voice_pitch = tts_player->pitch() * 100;
+        const double& default_tts_voice_pitch
+            = tts_player->pitch() * max_voice_pitch;
         const int& current_tts_voice_pitch =
             settings->value("dictsettings/tts_voice_pitch",
                             default_tts_voice_pitch).toInt();
-        tts_player->setPitch(current_tts_voice_pitch/100.);
+        tts_player->setPitch(current_tts_voice_pitch / max_voice_pitch);
     }
 }
 
@@ -450,7 +441,6 @@ void MainWindow::save_settings()
     save_webengine_settings();
     save_search_history();
     save_themecolor_menu_choice();
-    //settings->sync();
 }
 
 void MainWindow::save_show_history_config()
@@ -522,10 +512,10 @@ void MainWindow::at_search_history_items_amount_changed()
     //відповідно до кількості слів
     const QString& items_amount =
         QString::number(ui->search_history_list_widget->count());
-    const QString& new_label_text =
-        tr("Search history") + "(" + items_amount + "/500)";
+    const QString& new_label_text = tr("Search history") + "(" + items_amount
+        + "/" + QString::number(max_history_words_amount) + ")";
     ui->search_history_box->setTitle(new_label_text);
-    //save_search_history();
+    save_search_history();
 }
 
 void MainWindow::on_search_word_line_edit_returnPressed()
@@ -536,19 +526,18 @@ void MainWindow::on_search_word_line_edit_returnPressed()
     {
         auto word_in_list =
             ui->search_history_list_widget->findItems(word, Qt::MatchExactly);
-        if (ui->search_history_list_widget->count() < 500
-            && word_in_list.isEmpty())
-        {
+        if (ui->search_history_list_widget->count() < max_history_words_amount
+            && word_in_list.isEmpty()) {
             ui->search_history_list_widget->insertItem(0, word);
             at_search_history_items_amount_changed();
-        }
-        else if (ui->search_history_list_widget->count() >= 500
-                   && word_in_list.isEmpty())
-        {
+        } else if (ui->search_history_list_widget->count()
+                       >= max_history_words_amount
+                   && word_in_list.isEmpty()) {
             const int& item_amount = ui->search_history_list_widget->count();
-            const auto& last_item =
-                ui->search_history_list_widget->takeItem(item_amount-1);
+            const QListWidgetItem* last_item
+                = ui->search_history_list_widget->takeItem(item_amount - 1);
             delete last_item;
+            last_item = nullptr;
             ui->search_history_list_widget->insertItem(0, word);
             at_search_history_items_amount_changed();
         }
@@ -559,19 +548,20 @@ void MainWindow::on_search_word_line_edit_returnPressed()
 void MainWindow::show_search_results(QString &word)
 {
     //Вивід результатів пошуку слова до відповідного вебвіджета
-    //ui->result_webwindow->
     if (!word.isEmpty())
     {
         const QString& word_lower = word.toLower();
-        hash_of_indexes dict_indexes = fileloader->get_hash_of_indexes();
-        hash_of_dicts dicts = fileloader->get_hash_of_dicts();
-        int start_word, end_word;
+        const hash_of_indexes dict_indexes = fileloader->get_hash_of_indexes();
+        const hash_of_dicts dicts = fileloader->get_hash_of_dicts();
+
         QString styled_article;
         bool word_is_exists {false};
         for (const auto& dict_name: std::as_const(active_dict_names))
         {
             for (int i=0; i<dict_indexes.value(dict_name).size(); ++i)
             {
+                int start_word { 0 };
+                int end_word { 0 };
                 const QString& index_word =
                     (*(std::get<0>(dict_indexes.value(dict_name).value(i)))).
                                             toLower();
@@ -589,7 +579,7 @@ void MainWindow::show_search_results(QString &word)
                     {
                         const QString& dict_body =
                             *(std::get<3>(dicts.value(dict_name)));
-                        end_word = dict_body.length();
+                        end_word = static_cast<int>(dict_body.length());
                     }
 
                     const QString& dict_body =
@@ -615,23 +605,23 @@ void MainWindow::show_search_results(QString &word)
     }
 }
 
-QString MainWindow::html_styled_article(const QString& dict_name,
-                                        const QString& raw_article,
-                                        const QString& word)
+auto MainWindow::html_styled_article(const QString& dict_name,
+                                     const QString& raw_article,
+                                     const QString& word) -> QString
 {
     //Створення html стилю для статті зі словника
     const QString& font_family =
         default_webengine_settings->
                         fontFamily(QWebEngineSettings::StandardFont);
-    const int& font_size =
-        default_webengine_settings->
-                        fontSize(QWebEngineSettings::DefaultFontSize)/16.;
+    const double& font_size = default_webengine_settings->fontSize(
+                                  QWebEngineSettings::DefaultFontSize)
+        / standard_font_size;
 
-    const int& font_weight = 400;//default_font.weight();
-    const QString& text_color = current_theme_colors.text_color;//"black";
-    const QString& background_color = current_theme_colors.background_color;//"white";
-    const QString& label_background_color =
-        current_theme_colors.label_background_color;//"navajowhite";
+    constexpr int font_weight { 400 };
+    const QString& text_color = current_theme_colors.text_color;
+    const QString& background_color = current_theme_colors.background_color;
+    const QString& label_background_color
+        = current_theme_colors.label_background_color;
     const QString& html_body_style = QString(
         "style='background-color: black;\
         font-family: %1;\
@@ -684,17 +674,15 @@ QString MainWindow::html_styled_article(const QString& dict_name,
 void MainWindow::on_actionShow_Hide_search_history_toggled(bool arg1)
 {
     //Показ чи приховування історії пошуку слів
-    if (arg1 == false)
-    {
+    if (!arg1) {
         ui->search_history_box->hide();
-    }
-    else
-    {
+    } else {
         ui->search_history_box->show();
     }
 }
 
-void MainWindow::on_dict_choice_combobox_currentTextChanged(const QString &arg1)
+void MainWindow::on_dict_choice_combobox_currentTextChanged(
+    const QString& current_dict_group)
 {
     //Реагування на зміну поточної групи словників
     create_set_of_words();
@@ -722,16 +710,15 @@ void MainWindow::on_search_history_list_widget_itemClicked(
 void MainWindow::on_actionChoose_font_triggered()
 {
     //Слот реагування на вибір шрифту
-    bool ok;
+    bool okay { false };
     QFont default_font;
     default_font.setFamily(default_webengine_settings->
                            fontFamily(QWebEngineSettings::StandardFont));
     default_font.setPointSize(default_webengine_settings->
                               fontSize(QWebEngineSettings::DefaultFontSize));
-    QFont current_font = QFontDialog::getFont(&ok, default_font, this);
+    QFont current_font = QFontDialog::getFont(&okay, default_font, this);
 
-    if (ok)
-    {
+    if (okay) {
         set_webengine_settings(current_font);
     }
 }
@@ -764,8 +751,7 @@ void MainWindow::on_play_word_button_pressed()
 {
     //Реагування на натискання кнопки програвання слова
     const QString& word = ui->search_word_line_edit->text();
-    if (!word.isEmpty() && tts_player)
-    {
+    if (!word.isEmpty() && tts_player != nullptr) {
         tts_player->say(word);
     }
 }
@@ -852,7 +838,6 @@ void MainWindow::on_actionDefault_theme_triggered()
     {
         show_search_results(word);
     }
-    //save_themecolor_menu_choice();
 }
 
 
@@ -870,7 +855,6 @@ void MainWindow::on_actionPlum_triggered()
     {
         show_search_results(word);
     }
-    //save_themecolor_menu_choice();
 }
 
 
@@ -888,12 +872,11 @@ void MainWindow::on_actionKashmir_triggered()
     {
         show_search_results(word);
     }
-    //save_themecolor_menu_choice();
 }
 
 void MainWindow::save_themecolor_menu_choice()
 {
-    QList<QAction*> actions = ui->menuTheme_settings->actions();
+    const QList<QAction*> actions = ui->menuTheme_settings->actions();
     for (auto action = actions.constBegin();
          action != actions.constEnd(); ++action)
     {
@@ -926,7 +909,7 @@ void MainWindow::load_themecolor_menu_choice()
             current_theme_colors.label_background_color = "PaleTurquoise";
         }
 
-        QList<QAction*> actions = ui->menuTheme_settings->actions();
+        const QList<QAction*> actions = ui->menuTheme_settings->actions();
         for (auto action = actions.constBegin();
              action != actions.constEnd(); ++action)
         {
@@ -942,6 +925,5 @@ void MainWindow::load_themecolor_menu_choice()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    //qDebug() << "Close event";
     save_settings();
 }

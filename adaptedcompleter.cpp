@@ -17,11 +17,13 @@ along with Movar. If not, see <https://www.gnu.org/licenses/>.*/
 
 #include "adaptedcompleter.h"
 
-AdaptedCompleter::AdaptedCompleter(const QStringList &entries,
-    QListView* listView,  QObject *parent)
-    : QCompleter{parent}
+AdaptedCompleter::AdaptedCompleter(const QStringList& entries,
+                                   QPointer<QListView> listView,
+                                   QPointer<QObject> parent)
+    : QCompleter { parent }
 {
-    const auto model = new AdaptedStringListModel(this);
+    const QPointer<AdaptedStringListModel> model
+        = new AdaptedStringListModel(this);
     setModel(model);
     setCompletionRole(model->adapted_role());
     model->setStringList(entries);
@@ -29,7 +31,7 @@ AdaptedCompleter::AdaptedCompleter(const QStringList &entries,
     setFilterMode(Qt::MatchStartsWith);
     setPopup(listView);
     setCaseSensitivity(Qt::CaseInsensitive);
-    setMaxVisibleItems(10);
+    setMaxVisibleItems(max_visible_items);
     setModelSorting(QCompleter::CaseInsensitivelySortedModel);
 }
 

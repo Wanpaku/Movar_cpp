@@ -41,12 +41,12 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(FileLoader* new_fileloader, QWidget *parent = nullptr);
-    ~MainWindow();
+    explicit MainWindow(std::shared_ptr<FileLoader> new_fileloader,
+                        QPointer<QWidget> parent = nullptr);
 
 protected:
-    void changeEvent(QEvent*);
-    void closeEvent(QCloseEvent *event);
+    void changeEvent(QEvent* event) override;
+    void closeEvent(QCloseEvent* event) override;
 
 private slots:
     void on_actionExit_triggered();
@@ -54,7 +54,8 @@ private slots:
     void on_actionClear_search_history_triggered();
     void on_search_word_line_edit_returnPressed();
     void on_actionShow_Hide_search_history_toggled(bool arg1);
-    void on_dict_choice_combobox_currentTextChanged(const QString &arg1);
+    void on_dict_choice_combobox_currentTextChanged(
+        const QString& current_dict_group);
     void at_dict_groups_amount_changed();
     void on_search_word_line_edit_textEdited(const QString &arg1);
     void on_search_history_list_widget_itemClicked(QListWidgetItem *item);
@@ -69,19 +70,24 @@ private slots:
     void on_actionKashmir_triggered();
 
 private:
-    Ui::MainWindow *ui;
-    QPointer<FileLoader> fileloader = {nullptr};
-    QPointer<DictionarySettings> dict_settings {nullptr};
+    std::shared_ptr<Ui::MainWindow> ui { nullptr };
+    std::shared_ptr<FileLoader> fileloader { nullptr };
+    std::shared_ptr<DictionarySettings> dict_settings { nullptr };
     QPointer<QSettings> settings {nullptr};
-    QStringList set_of_words {};
-    QStringList active_dict_names {};
+    QStringList set_of_words;
+    QStringList active_dict_names;
     QTranslator start_translator;
     QPointer<QActionGroup> languages_group {nullptr};
-    QWebEngineSettings* default_webengine_settings {nullptr};
+    QWebEngineSettings* default_webengine_settings { nullptr };
     QString def_font_family;
     int def_font_size;
     QPointer<QTextToSpeech> tts_player {nullptr};
     struct ThemeColors current_theme_colors;
+    static constexpr int max_history_words_amount { 500 };
+    static constexpr double max_voice_volume { 100. };
+    static constexpr double max_voice_rate { 100. };
+    static constexpr double max_voice_pitch { 100. };
+    static constexpr double standard_font_size { 16. };
 
     void add_completer_to_line_edit(const QString& letters);
     void create_set_of_words();
@@ -93,9 +99,9 @@ private:
     void load_dict_groups_choices();
     void save_dict_groups_choices();
     void show_search_results(QString& word);
-    QString html_styled_article(const QString& dict_name,
-                                const QString& raw_article,
-                                const QString& word);
+    auto html_styled_article(const QString& dict_name,
+                             const QString& raw_article, const QString& word)
+        -> QString;
     void create_themes_action_group();
     void create_language_action_group();
     void load_interface_language(const QString& interface_language);

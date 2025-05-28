@@ -31,10 +31,15 @@ class AdaptedCompleter : public QCompleter
     //без введення діакритичних знаків й апострофу.
     Q_OBJECT
 public:
-    explicit AdaptedCompleter(const QStringList &entries, QListView *listView,
-                              QObject *parent = nullptr);
-    QStringList splitPath (const QString &path) const override;
-    QString pathFromIndex (const QModelIndex &index) const override;
+    explicit AdaptedCompleter(const QStringList& entries,
+                              QPointer<QListView> listView,
+                              QPointer<QObject> parent = nullptr);
+    [[nodiscard]] QStringList splitPath(const QString& path) const override;
+    [[nodiscard]] QString
+    pathFromIndex(const QModelIndex& index) const override;
+
+private:
+    static constexpr int max_visible_items = 10;
 };
 
 #endif // ADAPTEDCOMPLETER_H

@@ -35,7 +35,6 @@ along with Movar. If not, see <https://www.gnu.org/licenses/>.*/
 #include <QDialog>
 #include <QDebug>
 #include <QFileDialog>
-#include <QDir>
 #include <QInputDialog>
 #include <QVBoxLayout>
 #include <QListWidget>
@@ -71,28 +70,26 @@ class FileLoader : public QObject
     Q_OBJECT
 public:
     explicit FileLoader(QObject *parent = nullptr);
-    QPointer<QSettings> get_settings();
-    hash_of_dicts get_hash_of_dicts();
-    hash_of_indexes get_hash_of_indexes();
+    auto get_settings() -> QPointer<QSettings>;
+    auto get_hash_of_dicts() -> hash_of_dicts;
+    auto get_hash_of_indexes() -> hash_of_indexes;
     void download_dictionaries();
-    hash_of_paths get_hash_of_paths();
-    hash_of_mapped_words get_hash_of_mapped_words();
+    auto get_hash_of_paths() -> hash_of_paths;
+    auto get_hash_of_mapped_words() -> hash_of_mapped_words;
     void load_language_support();
-
-signals:
 
 private:
     void download_paths_to_dicts();
     void read_from_txt_file(const QString& path);
     void create_dict_indexes();
-    QString simplified_word(const QString& word);
+    auto simplified_word(const QString& word) -> QString;
 
     QPointer<QSettings> settings {nullptr};
-    hash_of_dicts dicts {};
-    hash_of_indexes dict_indexes {};
-    QStringList paths_to_dicts {};
-    hash_of_paths paths_and_dict_names {};
-    hash_of_mapped_words words {};
+    hash_of_dicts dicts;
+    hash_of_indexes dict_indexes;
+    QStringList paths_to_dicts;
+    hash_of_paths paths_and_dict_names;
+    hash_of_mapped_words words;
     QPointer<QProgressDialog> progress_dialog {nullptr};
     QTranslator lang_translator;
     void get_error_message(const QString& message);

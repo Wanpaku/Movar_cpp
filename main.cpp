@@ -23,12 +23,12 @@ along with Movar. If not, see <https://www.gnu.org/licenses/>.*/
 #include <QTranslator>
 #include <QDirIterator>
 
-int main(int argc, char *argv[])
+auto main(int argc, char* argv[]) -> int
 {
-    QApplication app(argc, argv);
+    const QApplication app(argc, argv);
     QApplication::setWindowIcon(QIcon("./icons/movar.ico"));
-    QPointer<FileLoader> fileloader = new FileLoader();
-    MainWindow mainwindow(fileloader);
+    std::unique_ptr<FileLoader> fileloader = std::make_unique<FileLoader>();
+    MainWindow mainwindow(std::move(fileloader));
     mainwindow.show();
     return app.exec();
 }
