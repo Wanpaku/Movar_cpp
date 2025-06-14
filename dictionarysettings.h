@@ -30,8 +30,15 @@ class DictionarySettings : public QDialog
     Q_OBJECT
 
 public:
-    explicit DictionarySettings(std::shared_ptr<FileLoader> new_fileloader,
-                                QPointer<QWidget> parent = nullptr);
+    explicit DictionarySettings(QPointer<FileLoader> new_fileloader,
+                                QWidget* parent = nullptr);
+    ~DictionarySettings() override;
+    DictionarySettings(const DictionarySettings& src) = delete;
+    auto operator=(const DictionarySettings& rhs)
+        -> DictionarySettings& = delete;
+    DictionarySettings(const DictionarySettings&& src) = delete;
+    auto operator=(const DictionarySettings&& rhs)
+        -> DictionarySettings& = delete;
     auto get_dict_groups_list_widgets() -> QList<QPointer<QListWidget>>;
 
 private slots:
@@ -61,12 +68,12 @@ signals:
     void tts_settings_changed();
 
 private:
-    std::shared_ptr<Ui::DictionarySettings> ui_dict_settings;
-    std::shared_ptr<FileLoader> fileloader { nullptr };
+    Ui::DictionarySettings* ui_dict_settings;
+    QPointer<FileLoader> fileloader { nullptr };
     QPointer<QSettings> settings { nullptr };
-    QList<QPointer<QVBoxLayout>> dict_groups_layouts;
+    QList<QVBoxLayout*> dict_groups_layouts;
     QList<QPointer<QListWidget>> dict_groups_list_widgets;
-    QPointer<QTextToSpeech> text_to_speech {nullptr};
+    QPointer<QTextToSpeech> text_to_speech { nullptr };
     static constexpr double max_volume = 100.;
 
     void add_path_dict(const QString& path);

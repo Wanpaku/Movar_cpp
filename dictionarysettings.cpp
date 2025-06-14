@@ -19,16 +19,25 @@ along with Movar. If not, see <https://www.gnu.org/licenses/>.*/
 #include "ui_dictionarysettings.h"
 #include <iostream>
 
-DictionarySettings::DictionarySettings(
-    std::shared_ptr<FileLoader> new_fileloader, QPointer<QWidget> parent)
+DictionarySettings::DictionarySettings(QPointer<FileLoader> new_fileloader,
+                                       QWidget* parent)
     : QDialog(parent)
-    , fileloader(std::move(new_fileloader))
-    , ui_dict_settings(std::make_shared<Ui::DictionarySettings>())
+    , fileloader(new_fileloader)
+    , ui_dict_settings(new Ui::DictionarySettings())
 {
     ui_dict_settings->setupUi(this);
     creating_shortcuts();
     set_available_dicts();
     load_settings();
+}
+
+DictionarySettings::~DictionarySettings()
+{
+    // fileloader->deleteLater();
+    // settings->deleteLater();
+    //  text_to_speech->deleteLater();
+
+    delete ui_dict_settings;
 }
 
 auto DictionarySettings::get_dict_groups_list_widgets()
@@ -140,6 +149,11 @@ void DictionarySettings::load_tts_engines()
         ui_dict_settings->tts_engine_combobox->
             setCurrentText(current_tts_engine);
         text_to_speech = new QTextToSpeech(current_tts_engine);
+    } else {
+        ui_dict_settings->tts_engine_combobox->setCurrentText(
+            default_tts_engine);
+        ui_dict_settings->tts_language_combobox->clear();
+        ui_dict_settings->tts_voice_name_combobox->clear();
     }
 }
 

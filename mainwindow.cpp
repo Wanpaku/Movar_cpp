@@ -17,10 +17,9 @@ along with Movar. If not, see <https://www.gnu.org/licenses/>.*/
 
 #include "mainwindow.h"
 
-MainWindow::MainWindow(std::shared_ptr<FileLoader> new_fileloader,
-                       QPointer<QWidget> parent)
+MainWindow::MainWindow(QPointer<FileLoader> new_fileloader, QWidget* parent)
     : QMainWindow(parent)
-    , ui(std::make_shared<Ui::MainWindow>())
+    , ui(new Ui::MainWindow())
     , fileloader(std::move(new_fileloader))
 {
     settings = fileloader->get_settings();
@@ -29,6 +28,12 @@ MainWindow::MainWindow(std::shared_ptr<FileLoader> new_fileloader,
     create_themes_action_group();
     load_settings();
     ui->search_word_line_edit->setFocus();
+}
+
+MainWindow::~MainWindow()
+{
+    qInfo() << tr("Exit from the app");
+    delete ui;
 }
 
 void MainWindow::create_language_action_group()
@@ -214,18 +219,27 @@ void MainWindow::create_set_of_words()
     {
         QStringList dict_keys = hash_of_mapped_words.keys();
         active_dict_names.append(dict_keys);
-        for(const auto& key: std::as_const(dict_keys))
-        {
-            const auto& word_keys = hash_of_mapped_words.value(key).keys();
-            for (const auto& word_key: std::as_const(word_keys))
-            {
+
+        // auto start = std::chrono::high_resolution_clock::now();
+        //  std::vector<std::future<void>> future_vec;
+        for (const auto& dict_key : std::as_const(dict_keys)) {
+
+            const auto word_keys = hash_of_mapped_words.value(dict_key).keys();
+
+            for (const auto& word_key : std::as_const(word_keys)) {
+
                 const QList<std::shared_ptr<QString>> values
-                    = hash_of_mapped_words.value(key).values(word_key);
+                    = hash_of_mapped_words.value(dict_key).values(word_key);
                 for (const auto& value : values) {
                     sort_map.insert(word_key, value);
                 }
             }
         }
+        // auto end = std::chrono::high_resolution_clock::now();
+        // auto duration =
+        // std::chrono::duration_cast<std::chrono::milliseconds>(
+        //   end - start);
+        // qInfo() << "Def dicts combo: " << duration;
     }
 
     for (const auto& word: sort_map)
@@ -247,14 +261,14 @@ void MainWindow::add_completer_to_line_edit(const QString &letters)
 void MainWindow::on_actionDicitonary_settings_triggered()
 {
     //Відкриття вікна налаштувань словників
-    dict_settings = std::make_shared<DictionarySettings>(fileloader);
-    connect(dict_settings.get(),
-            &DictionarySettings::dict_groups_amount_changed, this,
-            &MainWindow::at_dict_groups_amount_changed);
-    connect(dict_settings.get(), &DictionarySettings::available_dicts_changed,
-            this, &MainWindow::create_set_of_words);
-    connect(dict_settings.get(), &DictionarySettings::tts_settings_changed,
-            this, &MainWindow::load_tts_player);
+    const QPointer<DictionarySettings> dict_settings
+        = new DictionarySettings(fileloader);
+    connect(dict_settings, &DictionarySettings::dict_groups_amount_changed,
+            this, &MainWindow::at_dict_groups_amount_changed);
+    connect(dict_settings, &DictionarySettings::available_dicts_changed, this,
+            &MainWindow::create_set_of_words);
+    connect(dict_settings, &DictionarySettings::tts_settings_changed, this,
+            &MainWindow::load_tts_player);
     dict_settings->show();
 }
 

@@ -41,8 +41,13 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(std::shared_ptr<FileLoader> new_fileloader,
-                        QPointer<QWidget> parent = nullptr);
+    explicit MainWindow(QPointer<FileLoader> new_fileloader,
+                        QWidget* parent = nullptr);
+    ~MainWindow() override;
+    MainWindow(const MainWindow& src) = delete;
+    auto operator=(const MainWindow& rhs) -> MainWindow& = delete;
+    MainWindow(const MainWindow&& src) = delete;
+    auto operator=(const MainWindow&& rhs) -> MainWindow& = delete;
 
 protected:
     void changeEvent(QEvent* event) override;
@@ -70,9 +75,8 @@ private slots:
     void on_actionKashmir_triggered();
 
 private:
-    std::shared_ptr<Ui::MainWindow> ui { nullptr };
-    std::shared_ptr<FileLoader> fileloader { nullptr };
-    std::shared_ptr<DictionarySettings> dict_settings { nullptr };
+    Ui::MainWindow* ui { nullptr };
+    QPointer<FileLoader> fileloader { nullptr };
     QPointer<QSettings> settings {nullptr};
     QStringList set_of_words;
     QStringList active_dict_names;

@@ -17,18 +17,25 @@ along with Movar. If not, see <https://www.gnu.org/licenses/>.*/
 
 #include "mainwindow.h"
 #include "fileloader.h"
+#include "logger.h"
 
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
 #include <QDirIterator>
+#include <memory>
 
 auto main(int argc, char* argv[]) -> int
 {
-    const QApplication app(argc, argv);
-    QApplication::setWindowIcon(QIcon("./icons/movar.ico"));
-    std::unique_ptr<FileLoader> fileloader = std::make_unique<FileLoader>();
-    MainWindow mainwindow(std::move(fileloader));
-    mainwindow.show();
-    return app.exec();
+    Logger::init();
+
+    const std::unique_ptr<QApplication> app { std::make_unique<QApplication>(
+        argc, argv) };
+    QApplication::setWindowIcon(QIcon(":/icons/icons/movar.png"));
+    const std::unique_ptr<FileLoader> fileloader
+        = std::make_unique<FileLoader>();
+    std::unique_ptr<MainWindow> mainwindow
+        = std::make_unique<MainWindow>(fileloader.get());
+    mainwindow->show();
+    return app->exec();
 }

@@ -44,11 +44,10 @@ along with Movar. If not, see <https://www.gnu.org/licenses/>.*/
 #include <QActionGroup>
 #include <QMultiMap>
 #include <QMessageBox>
-
+#include <future>
+#include <chrono>
 #include <tuple>
 #include <memory>
-#include <algorithm>
-#include <string>
 
 #include "adaptedcompleter.h"
 
@@ -79,22 +78,23 @@ public:
     void load_language_support();
 
 private:
-    void download_paths_to_dicts();
-    void read_from_txt_file(const QString& path);
-    void create_dict_indexes();
-    auto simplified_word(const QString& word) -> QString;
-
     QPointer<QSettings> settings {nullptr};
     hash_of_dicts dicts;
     hash_of_indexes dict_indexes;
     QStringList paths_to_dicts;
     hash_of_paths paths_and_dict_names;
     hash_of_mapped_words words;
-    QPointer<QProgressDialog> progress_dialog {nullptr};
     QTranslator lang_translator;
-    void get_error_message(const QString& message);
 
-
+    void download_paths_to_dicts();
+    void read_from_txt_file(const QString& path);
+    void create_dict_indexes();
+    static auto simplified_word(const QString& word) -> QString;
+    static void get_error_message(const QString& message);
+    void get_dict_pair(const QString& path, const QString& filename);
+    void create_sep_dict_index(const QString& dict_name,
+                               const QString& reg_key,
+                               const QString& full_dict);
 };
 
 #endif // FILELOADER_H
