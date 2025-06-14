@@ -46,7 +46,7 @@
     </message>
     <message>
         <location filename="../dictionarysettings.ui" line="113"/>
-        <location filename="../dictionarysettings.cpp" line="484"/>
+        <location filename="../dictionarysettings.cpp" line="487"/>
         <source>Add dictionary group</source>
         <translation type="unfinished">Додати групу словників</translation>
     </message>
@@ -71,17 +71,17 @@
         <translation type="unfinished">Показати опис словника</translation>
     </message>
     <message>
-        <location filename="../dictionarysettings.cpp" line="379"/>
+        <location filename="../dictionarysettings.cpp" line="380"/>
         <source>Open Directory</source>
         <translation type="unfinished">Відкрити розташування</translation>
     </message>
     <message>
-        <location filename="../dictionarysettings.cpp" line="485"/>
+        <location filename="../dictionarysettings.cpp" line="487"/>
         <source>Enter dictionary group name:</source>
         <translation type="unfinished">Введіть назву групи словників:</translation>
     </message>
     <message>
-        <location filename="../dictionarysettings.cpp" line="59"/>
+        <location filename="../dictionarysettings.cpp" line="61"/>
         <source>Close</source>
         <translation type="unfinished">Закрити</translation>
     </message>
@@ -131,7 +131,7 @@
         <translation type="unfinished">Відтворити</translation>
     </message>
     <message>
-        <location filename="../dictionarysettings.cpp" line="121"/>
+        <location filename="../dictionarysettings.cpp" line="129"/>
         <source>None</source>
         <translation type="unfinished">Немає</translation>
     </message>
@@ -139,9 +139,38 @@
 <context>
     <name>FileLoader</name>
     <message>
-        <location filename="../fileloader.cpp" line="235"/>
+        <location filename="../fileloader.cpp" line="24"/>
+        <source>Start program Movar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../fileloader.cpp" line="31"/>
+        <source>Error happens during downloading files.
+ </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../fileloader.cpp" line="256"/>
         <source>Download dictionaries...</source>
         <translation type="unfinished">Завантаження словників...</translation>
+    </message>
+</context>
+<context>
+    <name>Logger</name>
+    <message>
+        <location filename="../logger.cpp" line="61"/>
+        <source>Couldn&apos;t open file </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../logger.cpp" line="81"/>
+        <source>line: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../logger.cpp" line="83"/>
+        <source>message: </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -177,7 +206,7 @@
     </message>
     <message>
         <location filename="../mainwindow.ui" line="135"/>
-        <location filename="../mainwindow.cpp" line="526"/>
+        <location filename="../mainwindow.cpp" line="529"/>
         <source>Search history</source>
         <translation type="unfinished">Історія пошуку</translation>
     </message>
@@ -276,17 +305,22 @@
         <translation type="obsolete">Класика</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="295"/>
+        <location filename="../mainwindow.cpp" line="35"/>
+        <source>Exit from the app</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="302"/>
         <source>All dictionaries</source>
         <translation type="unfinished">Усі словники</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="378"/>
+        <location filename="../mainwindow.cpp" line="383"/>
         <source>None</source>
         <translation type="unfinished">Немає</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="613"/>
+        <location filename="../mainwindow.cpp" line="617"/>
         <source>There is no such word in the available dictionaries.</source>
         <translation type="unfinished">Немає такого слова в наявних словниках.</translation>
     </message>
@@ -341,6 +375,29 @@
     <message>
         <source>Close</source>
         <translation type="obsolete">Закрити</translation>
+    </message>
+</context>
+<context>
+    <name>QObject</name>
+    <message>
+        <location filename="../logger.cpp" line="44"/>
+        <source>Info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../logger.cpp" line="45"/>
+        <source>Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../logger.cpp" line="46"/>
+        <source>Critical</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../logger.cpp" line="47"/>
+        <source>Fatal</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

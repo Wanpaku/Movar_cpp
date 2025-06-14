@@ -46,7 +46,7 @@
     </message>
     <message>
         <location filename="../dictionarysettings.ui" line="113"/>
-        <location filename="../dictionarysettings.cpp" line="484"/>
+        <location filename="../dictionarysettings.cpp" line="487"/>
         <source>Add dictionary group</source>
         <translation type="unfinished">Add dictionary group</translation>
     </message>
@@ -71,17 +71,17 @@
         <translation type="unfinished">Show dictionary description</translation>
     </message>
     <message>
-        <location filename="../dictionarysettings.cpp" line="379"/>
+        <location filename="../dictionarysettings.cpp" line="380"/>
         <source>Open Directory</source>
         <translation type="unfinished">Open Directory</translation>
     </message>
     <message>
-        <location filename="../dictionarysettings.cpp" line="485"/>
+        <location filename="../dictionarysettings.cpp" line="487"/>
         <source>Enter dictionary group name:</source>
         <translation type="unfinished">Enter dictionary group name:</translation>
     </message>
     <message>
-        <location filename="../dictionarysettings.cpp" line="59"/>
+        <location filename="../dictionarysettings.cpp" line="61"/>
         <source>Close</source>
         <translation type="unfinished">Close</translation>
     </message>
@@ -131,7 +131,7 @@
         <translation type="unfinished">Play</translation>
     </message>
     <message>
-        <location filename="../dictionarysettings.cpp" line="121"/>
+        <location filename="../dictionarysettings.cpp" line="129"/>
         <source>None</source>
         <translation type="unfinished">None</translation>
     </message>
@@ -139,9 +139,39 @@
 <context>
     <name>FileLoader</name>
     <message>
-        <location filename="../fileloader.cpp" line="235"/>
+        <location filename="../fileloader.cpp" line="24"/>
+        <source>Start program Movar.</source>
+        <translation type="unfinished">Start program Movar.</translation>
+    </message>
+    <message>
+        <location filename="../fileloader.cpp" line="31"/>
+        <source>Error happens during downloading files.
+ </source>
+        <translation type="unfinished">Error happens during downloading files.
+ </translation>
+    </message>
+    <message>
+        <location filename="../fileloader.cpp" line="256"/>
         <source>Download dictionaries...</source>
         <translation type="unfinished">Download dictionaries...</translation>
+    </message>
+</context>
+<context>
+    <name>Logger</name>
+    <message>
+        <location filename="../logger.cpp" line="61"/>
+        <source>Couldn&apos;t open file </source>
+        <translation type="unfinished">Couldn&apos;t open file </translation>
+    </message>
+    <message>
+        <location filename="../logger.cpp" line="81"/>
+        <source>line: </source>
+        <translation type="unfinished">line: </translation>
+    </message>
+    <message>
+        <location filename="../logger.cpp" line="83"/>
+        <source>message: </source>
+        <translation type="unfinished">message: </translation>
     </message>
 </context>
 <context>
@@ -159,7 +189,7 @@
     <message>
         <location filename="../mainwindow.ui" line="71"/>
         <source>about:blank</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">about:blank</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="124"/>
@@ -173,7 +203,7 @@
     </message>
     <message>
         <location filename="../mainwindow.ui" line="135"/>
-        <location filename="../mainwindow.cpp" line="526"/>
+        <location filename="../mainwindow.cpp" line="529"/>
         <source>Search history</source>
         <translation type="unfinished">Search history</translation>
     </message>
@@ -205,7 +235,7 @@
     <message>
         <location filename="../mainwindow.ui" line="198"/>
         <source>Ctrl+Q</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ctrl+Q</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="209"/>
@@ -215,7 +245,7 @@
     <message>
         <location filename="../mainwindow.ui" line="212"/>
         <source>F2</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">F2</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="223"/>
@@ -272,17 +302,22 @@
         <translation type="obsolete">Classic</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="295"/>
+        <location filename="../mainwindow.cpp" line="35"/>
+        <source>Exit from the app</source>
+        <translation type="unfinished">Exit from the app</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="302"/>
         <source>All dictionaries</source>
         <translation type="unfinished">All dictionaries</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="378"/>
+        <location filename="../mainwindow.cpp" line="383"/>
         <source>None</source>
         <translation type="unfinished">None</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="613"/>
+        <location filename="../mainwindow.cpp" line="617"/>
         <source>There is no such word in the available dictionaries.</source>
         <translation type="unfinished">There is no such word in the available dictionaries.</translation>
     </message>
@@ -329,6 +364,29 @@
     <message>
         <source>Close</source>
         <translation type="obsolete">Close</translation>
+    </message>
+</context>
+<context>
+    <name>QObject</name>
+    <message>
+        <location filename="../logger.cpp" line="44"/>
+        <source>Info</source>
+        <translation type="unfinished">Info</translation>
+    </message>
+    <message>
+        <location filename="../logger.cpp" line="45"/>
+        <source>Warning</source>
+        <translation type="unfinished">Warning</translation>
+    </message>
+    <message>
+        <location filename="../logger.cpp" line="46"/>
+        <source>Critical</source>
+        <translation type="unfinished">Critical</translation>
+    </message>
+    <message>
+        <location filename="../logger.cpp" line="47"/>
+        <source>Fatal</source>
+        <translation type="unfinished">Fatal</translation>
     </message>
 </context>
 </TS>
