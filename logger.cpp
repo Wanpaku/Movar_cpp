@@ -65,7 +65,7 @@ void Logger::init()
 
     qInstallMessageHandler(message_output);
 
-    if (get_log_file()->exists()) {
+    if (get_log_file()->exists() && get_log_file()->size() > max_log_size) {
         get_log_file()->resize(0);
     }
 

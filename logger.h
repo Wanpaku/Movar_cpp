@@ -39,6 +39,7 @@ public:
 
 private:
     static inline bool is_init { false };
+    static inline const qint64 max_log_size = 10 * 1024 * 1024; // 10 Mb
     // Uncomment this variable here and in "message output" method
     // if you wont to see qDebug output in the console
     static inline const QtMessageHandler QT_DEFAULT_MESSAGE_HANDLER
