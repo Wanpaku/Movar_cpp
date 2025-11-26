@@ -1,6 +1,8 @@
 About Movar application
 ========================
 
+[![CodeQL](https://github.com/Wanpaku/Movar_cpp/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/Wanpaku/Movar_cpp/actions/workflows/github-code-scanning/codeql)
+
 Screenshots
 ===========
 
